@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Race Chaos Lab v0.1</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2e;--card:#17223a;--line:#2a3a5d;--text:#eef4ff;--muted:#9fb0cc;--accent:#63d7ff;--good:#65e6a7;--warn:#ffd166;--bad:#ff7b8f;--violet:#b69cff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#08101e,#0d1425 45%,#0b1020);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
+.wrap{max-width:1120px;margin:auto;padding:14px 14px 80px}
+header{padding:8px 2px 10px}h1{font-size:24px;margin:0 0 4px}.sub{font-size:13px;color:var(--muted);line-height:1.5}
+.badge{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid #3d537f;border-radius:999px;font-size:11px;color:#c8d6ef}
+.notice{background:#101a31;border:1px solid #2c3e63;border-radius:14px;padding:12px;margin:10px 0 14px;font-size:12px;line-height:1.65;color:#c9d6eb}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;position:sticky;top:0;z-index:20;background:rgba(11,16,32,.94);backdrop-filter:blur(10px);padding:8px 0}
+.tab{border:1px solid #2d3d60;background:#121a2e;color:#c8d5ec;border-radius:10px;padding:9px 5px;font-size:11px;font-weight:700}.tab.active{background:#0f7da6;border-color:#0f9bd0;color:#fff}
+section{display:none}section.active{display:block}.panel{background:rgba(18,26,46,.95);border:1px solid #263654;border-radius:16px;padding:13px;margin:12px 0}
+.panel h2{font-size:17px;margin:0 0 10px}.panel h3{font-size:14px;margin:14px 0 8px}.grid2,.grid3{display:grid;gap:9px}.grid2{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(3,1fr)}}label{font-size:11px;color:var(--muted);display:block;margin:0 0 5px}
+input,select,textarea,button{font:inherit;width:100%;border-radius:10px;border:1px solid #344867}input,select,textarea{background:#0d1528;color:var(--text);padding:10px;outline:none}
+textarea{min-height:72px;resize:vertical}button{padding:10px 11px;background:#0b82b2;color:white;font-weight:800;border:none}button.secondary{background:#31415f}button.danger{background:#8b3040}button.good{background:#177b57}
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.btnrow3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}@media(max-width:620px){.btnrow3{grid-template-columns:1fr}}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}@media(max-width:760px){.cards{grid-template-columns:1fr 1fr}}
+.card{background:#0d1528;border:1px solid #263654;border-radius:13px;padding:11px}.card .k{font-size:11px;color:var(--muted)}.card .v{font-size:22px;font-weight:900;margin-top:4px}.card .s{font-size:10px;color:#9cafca;margin-top:3px}
+.goodtxt{color:var(--good)}.warntxt{color:var(--warn)}.badtxt{color:var(--bad)}.violet{color:var(--violet)}.list{display:flex;flex-direction:column;gap:8px}
+.item{background:#0d1528;border:1px solid #263654;border-radius:12px;padding:10px}.itemhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item strong{font-size:14px}
+.meta{font-size:11px;color:var(--muted);line-height:1.5;margin-top:4px}.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.tag{font-size:10px;padding:4px 7px;border:1px solid #3a4e73;border-radius:999px;color:#c7d5eb}
+.itembtns{display:flex;gap:6px;margin-top:9px}.itembtns button{width:auto;padding:6px 9px;font-size:11px}hr{border:0;border-top:1px solid #263654;margin:14px 0}.mini{font-size:11px;color:var(--muted);line-height:1.6}
+.bigRisk{font-size:40px;font-weight:1000;letter-spacing:-1px;margin:6px 0}.bar{height:9px;background:#0b1120;border-radius:99px;overflow:hidden;border:1px solid #24334f}.bar>div{height:100%;background:linear-gradient(90deg,#55d6ff,#ffcf66,#ff7b8f);width:0%}
+.tableWrap{overflow:auto;border:1px solid #263654;border-radius:12px}table{border-collapse:collapse;width:100%;min-width:650px;background:#0d1528}th,td{font-size:11px;padding:8px;border-bottom:1px solid #263654;text-align:left}th{color:#b9c8e0;background:#111c32}
+.empty{padding:18px;text-align:center;color:var(--muted);font-size:12px}footer{font-size:10px;color:#7183a2;margin-top:18px;line-height:1.6}.hidden{display:none!important}
+</style></head><body><div class="wrap">
+<header><h1>Race Chaos Lab</h1><div class="sub">競馬アクシデント確率・展開撹乱研究ツール</div><span class="badge">PROTOTYPE v0.1</span></header>
+<div class="notice"><b>研究方針：</b> 馬側は「レースに明確な影響を与えた出遅れ・掛かり」を記録。騎手側は「ラップや隊列を歪め、一定の集団・脚質へ波及した展開撹乱」を記録します。展開を動かして本人が1〜3着なら「成功した奇策」、4着以下なら「失敗した展開撹乱」と扱います。</div>
+<nav class="tabs"><button class="tab active" data-tab="home">ホーム</button><button class="tab" data-tab="race">レース</button><button class="tab" data-tab="record">騎乗記録</button><button class="tab" data-tab="db">DB</button><button class="tab" data-tab="risk">今回リスク</button></nav>
+
+<section id="home" class="active">
+<div class="panel"><h2>研究ダッシュボード</h2><div class="cards">
+<div class="card"><div class="k">登録レース</div><div id="dashRaces" class="v">0</div></div>
+<div class="card"><div class="k">騎乗記録</div><div id="dashRecords" class="v">0</div></div>
+<div class="card"><div class="k">登録馬</div><div id="dashHorses" class="v">0</div></div>
+<div class="card"><div class="k">登録騎手</div><div id="dashJockeys" class="v">0</div></div>
+</div></div>
+<div class="panel"><h2>このv0.1でできること</h2><div class="mini">① レース情報とラップを保存<br>② 各馬の「影響あり出遅れ・掛かり」を記録<br>③ 騎手の「成功した奇策・失敗した展開撹乱」を記録<br>④ 馬・騎手ごとの発生率と信頼度を自動集計<br>⑤ 馬×騎手の「参考シナリオ逸脱リスク」を計算<br>⑥ JSONでバックアップ／復元</div></div>
+<div class="panel"><h2>最新の騎乗記録</h2><div id="recentRecords" class="list"></div></div>
+</section>
+
+<section id="race">
+<div class="panel"><h2>レース登録</h2><input type="hidden" id="raceEditId">
+<div class="grid2">
+<div><label>開催日</label><input id="raceDate" type="date"></div><div><label>レース名</label><input id="raceName" placeholder="例：札幌記念"></div>
+<div><label>競馬場</label><input id="raceTrack" placeholder="例：札幌"></div><div><label>グレード</label><select id="raceGrade"><option>G1</option><option>G2</option><option selected>G3</option><option>OP/L</option><option>その他</option></select></div>
+<div><label>芝／ダート</label><select id="raceSurface"><option>芝</option><option>ダート</option></select></div><div><label>距離（m）</label><input id="raceDistance" type="number" min="800" step="100" placeholder="2000"></div>
+<div><label>馬場</label><select id="raceGoing"><option>良</option><option>稍重</option><option>重</option><option>不良</option></select></div><div><label>天候</label><select id="raceWeather"><option>晴</option><option>曇</option><option>小雨</option><option>雨</option><option>雪</option></select></div>
+<div><label>頭数</label><input id="raceField" type="number" min="2" max="24" placeholder="18"></div><div><label>コース区分（任意）</label><input id="raceCourse" placeholder="例：Bコース替わり1週目"></div>
+</div>
+<div style="margin-top:9px"><label>各ハロンのラップ（カンマ区切り・任意）</label><textarea id="raceLaps" placeholder="例：12.5, 10.9, 11.4, 11.8, 12.1, 12.4"></textarea></div>
+<div style="margin-top:9px"><label>レースメモ（任意）</label><textarea id="raceNote" placeholder="例：前半から先行争い激化。3角から捲りあり。"></textarea></div>
+<div class="btnrow"><button id="saveRace">レースを保存</button><button id="clearRace" class="secondary">入力をクリア</button></div>
+</div>
+<div class="panel"><h2>保存済みレース</h2><div id="raceList" class="list"></div></div>
+</section>
+
+<section id="record">
+<div class="panel"><h2>騎乗記録を登録</h2><input type="hidden" id="recEditId">
+<div class="grid2">
+<div><label>対象レース</label><select id="recRace"></select></div><div><label>馬名</label><input id="recHorse" placeholder="馬名"></div>
+<div><label>騎手名</label><input id="recJockey" placeholder="騎手名"></div><div><label>人気</label><input id="recPopularity" type="number" min="1" max="30" placeholder="例：9"></div>
+<div><label>オッズ（任意）</label><input id="recOdds" type="number" min="1" step="0.1"></div><div><label>着順</label><input id="recFinish" type="number" min="1" max="30"></div>
+<div><label>枠</label><input id="recFrame" type="number" min="1" max="8"></div><div><label>馬番</label><input id="recNumber" type="number" min="1" max="30"></div>
+<div><label>今回の脚質</label><select id="recStyle"><option>逃げ</option><option>先行</option><option selected>好位</option><option>差し</option><option>追込</option><option>不明</option></select></div>
+<div><label>通過順位（任意）</label><input id="recPassing" placeholder="例：12-10-3-2"></div>
+<div><label>騎乗関係</label><select id="recRideType"><option>テン乗り</option><option selected>継続騎乗</option><option>不明</option></select></div>
+<div><label>その時点の重賞騎乗経験数</label><input id="recGradedExp" type="number" min="0"></div>
+</div>
+<h3>馬側アクシデント</h3><div class="grid2">
+<div><label>影響あり出遅れ</label><select id="recSlowStart"><option value="0">なし</option><option value="1">あり・軽</option><option value="2">あり・中</option><option value="3">あり・重</option></select></div>
+<div><label>影響あり掛かり</label><select id="recPulling"><option value="0">なし</option><option value="1">あり・軽</option><option value="2">あり・中</option><option value="3">あり・重</option></select></div>
+</div>
+<h3>騎手側：展開撹乱</h3><div class="grid2">
+<div><label>展開撹乱判定</label><select id="recChaos"><option value="none">なし</option><option value="success">成功した奇策（本人1〜3着）</option><option value="fail">失敗した展開撹乱（本人4着以下）</option><option value="hold">判定保留</option></select></div>
+<div><label>撹乱タイプ</label><select id="recChaosType"><option>なし</option><option>暴走・異常ハイペース</option><option>早仕掛け</option><option>捲り</option><option>位置取り異常</option><option>ペース判断異常</option><option>その他</option></select></div>
+<div><label>行動異常度 0〜5</label><input id="recAbnormal" type="number" min="0" max="5" value="0"></div><div><label>展開影響度 0〜5</label><input id="recImpact" type="number" min="0" max="5" value="0"></div>
+<div><label>主に影響を受けた集団</label><select id="recAffected"><option>なし／不明</option><option>逃げ馬</option><option>先行勢</option><option>前方勢全体</option><option>中団勢</option><option>差し勢</option><option>追込勢</option><option>全体</option></select></div>
+<div><label>展開への作用</label><select id="recEffect"><option>なし／不明</option><option>前方勢消耗</option><option>先行勢総崩れ</option><option>差し浮上</option><option>追込浮上</option><option>隊列圧縮</option><option>隊列縦長化</option><option>中盤急加速</option><option>ロングスパート化</option><option>その他</option></select></div>
+</div>
+<div style="margin-top:9px"><label>検証メモ</label><textarea id="recNote" placeholder="ラップ・映像・通過順位を見た所感"></textarea></div>
+<div class="btnrow"><button id="saveRecord">騎乗記録を保存</button><button id="clearRecord" class="secondary">入力をクリア</button></div>
+</div>
+<div class="panel"><h2>騎乗記録一覧</h2><div id="recordList" class="list"></div></div>
+</section>
+
+<section id="db">
+<div class="panel"><h2>馬アクシデントDB</h2><div class="tableWrap"><table><thead><tr><th>馬名</th><th>記録数</th><th>出遅れ</th><th>掛かり</th><th>総合</th><th>重度</th><th>信頼度</th></tr></thead><tbody id="horseDb"></tbody></table></div></div>
+<div class="panel"><h2>騎手展開撹乱DB</h2><div class="tableWrap"><table><thead><tr><th>騎手</th><th>記録数</th><th>撹乱率</th><th>成功奇策率</th><th>失敗撹乱率</th><th>奇策成功率</th><th>最終重賞経験</th><th>信頼度</th></tr></thead><tbody id="jockeyDb"></tbody></table></div></div>
+<div class="panel"><h2>データ管理</h2><div class="mini">Safariのデータ削除に備え、定期的にバックアップを書き出してください。</div><div class="btnrow3"><button id="exportBtn" class="good">JSONバックアップ</button><button id="importBtn" class="secondary">JSONを復元</button><button id="wipeBtn" class="danger">全データ削除</button></div><input id="importFile" type="file" accept=".json,application/json" class="hidden"></div>
+</section>
+
+<section id="risk"><div class="panel"><h2>今回の参考リスク計算</h2><div class="grid2"><div><label>馬</label><select id="riskHorse"></select></div><div><label>騎手</label><select id="riskJockey"></select></div></div><div id="riskResult" style="margin-top:14px"></div></div></section>
+<footer>Race Chaos Lab v0.1 — 現在は研究用プロトタイプ。数値は入力された記録から単純集計した参考値です。将来版では条件別集計、少数サンプル補正、自動スクリーニング、本体レースシミュレーター接続を追加予定。</footer>
+</div>
+<script>
+const KEY='race-chaos-lab-v01'; let state=loadState();
+function blankState(){return{version:'0.1',races:[],records:[]}}
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||blankState()}catch(e){return blankState()}}
+function saveState(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function pct(n,d){return d?((n/d)*100).toFixed(1)+'%':'—'}
+function stars(n){const s=n>=60?5:n>=30?4:n>=15?3:n>=5?2:n>0?1:0;return '★'.repeat(s)+'☆'.repeat(5-s)}
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function raceLabel(id){const r=state.races.find(x=>x.id===id);return r?`${r.date||''} ${r.name||'無名レース'}`.trim():'レース未登録'}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+function switchTab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('section').forEach(x=>x.classList.toggle('active',x.id===name))}
+saveRace.addEventListener('click',()=>{const id=raceEditId.value||uid();const obj={id,date:raceDate.value,name:raceName.value.trim(),track:raceTrack.value.trim(),grade:raceGrade.value,surface:raceSurface.value,distance:+raceDistance.value||0,going:raceGoing.value,weather:raceWeather.value,field:+raceField.value||0,course:raceCourse.value.trim(),laps:raceLaps.value.trim(),note:raceNote.value.trim()};if(!obj.name){alert('レース名を入力してください');return}const i=state.races.findIndex(x=>x.id===id);if(i>=0)state.races[i]=obj;else state.races.push(obj);clearRaceForm();saveState()});
+clearRace.addEventListener('click',clearRaceForm);
+function clearRaceForm(){raceEditId.value='';raceDate.value='';raceName.value='';raceTrack.value='';raceGrade.value='G3';raceSurface.value='芝';raceDistance.value='';raceGoing.value='良';raceWeather.value='晴';raceField.value='';raceCourse.value='';raceLaps.value='';raceNote.value=''}
+saveRecord.addEventListener('click',()=>{const id=recEditId.value||uid();const obj={id,raceId:recRace.value,horse:recHorse.value.trim(),jockey:recJockey.value.trim(),popularity:+recPopularity.value||0,odds:+recOdds.value||0,finish:+recFinish.value||0,frame:+recFrame.value||0,number:+recNumber.value||0,style:recStyle.value,passing:recPassing.value.trim(),rideType:recRideType.value,gradedExp:+recGradedExp.value||0,slowStart:+recSlowStart.value,pulling:+recPulling.value,chaos:recChaos.value,chaosType:recChaosType.value,abnormal:+recAbnormal.value||0,impact:+recImpact.value||0,affected:recAffected.value,effect:recEffect.value,note:recNote.value.trim()};if(!obj.horse||!obj.jockey){alert('馬名と騎手名は必須です');return}if(!obj.raceId){alert('先に対象レースを登録してください');return}if(obj.chaos==='success'&&obj.finish>3&&obj.finish){if(!confirm('成功した奇策ですが着順が4着以下です。そのまま保存しますか？'))return}if(obj.chaos==='fail'&&obj.finish>0&&obj.finish<=3){if(!confirm('失敗した展開撹乱ですが馬券内です。そのまま保存しますか？'))return}const i=state.records.findIndex(x=>x.id===id);if(i>=0)state.records[i]=obj;else state.records.push(obj);clearRecordForm();saveState()});
+clearRecord.addEventListener('click',clearRecordForm);
+function clearRecordForm(){recEditId.value='';recHorse.value='';recJockey.value='';recPopularity.value='';recOdds.value='';recFinish.value='';recFrame.value='';recNumber.value='';recStyle.value='好位';recPassing.value='';recRideType.value='継続騎乗';recGradedExp.value='';recSlowStart.value='0';recPulling.value='0';recChaos.value='none';recChaosType.value='なし';recAbnormal.value='0';recImpact.value='0';recAffected.value='なし／不明';recEffect.value='なし／不明';recNote.value=''}
+window.editRace=id=>{const r=state.races.find(x=>x.id===id);if(!r)return;raceEditId.value=r.id;raceDate.value=r.date||'';raceName.value=r.name||'';raceTrack.value=r.track||'';raceGrade.value=r.grade||'G3';raceSurface.value=r.surface||'芝';raceDistance.value=r.distance||'';raceGoing.value=r.going||'良';raceWeather.value=r.weather||'晴';raceField.value=r.field||'';raceCourse.value=r.course||'';raceLaps.value=r.laps||'';raceNote.value=r.note||'';switchTab('race');window.scrollTo({top:0,behavior:'smooth'})}
+window.deleteRace=id=>{if(state.records.some(x=>x.raceId===id)){alert('このレースには騎乗記録があります。先に該当記録を削除してください。');return}if(confirm('このレースを削除しますか？')){state.races=state.races.filter(x=>x.id!==id);saveState()}}
+window.editRecord=id=>{const r=state.records.find(x=>x.id===id);if(!r)return;recEditId.value=r.id;recRace.value=r.raceId||'';recHorse.value=r.horse||'';recJockey.value=r.jockey||'';recPopularity.value=r.popularity||'';recOdds.value=r.odds||'';recFinish.value=r.finish||'';recFrame.value=r.frame||'';recNumber.value=r.number||'';recStyle.value=r.style||'好位';recPassing.value=r.passing||'';recRideType.value=r.rideType||'不明';recGradedExp.value=r.gradedExp||'';recSlowStart.value=String(r.slowStart||0);recPulling.value=String(r.pulling||0);recChaos.value=r.chaos||'none';recChaosType.value=r.chaosType||'なし';recAbnormal.value=r.abnormal||0;recImpact.value=r.impact||0;recAffected.value=r.affected||'なし／不明';recEffect.value=r.effect||'なし／不明';recNote.value=r.note||'';switchTab('record');window.scrollTo({top:0,behavior:'smooth'})}
+window.deleteRecord=id=>{if(confirm('この騎乗記録を削除しますか？')){state.records=state.records.filter(x=>x.id!==id);saveState()}}
+function horseStats(name){const rs=state.records.filter(x=>x.horse===name),starts=rs.length,slow=rs.filter(x=>x.slowStart>0).length,pull=rs.filter(x=>x.pulling>0).length,any=rs.filter(x=>x.slowStart>0||x.pulling>0).length,severe=rs.filter(x=>x.slowStart>=3||x.pulling>=3).length;return{name,starts,slow,pull,any,severe,acc:starts?any/starts:0}}
+function jockeyStats(name){const rs=state.records.filter(x=>x.jockey===name),rides=rs.length,success=rs.filter(x=>x.chaos==='success').length,fail=rs.filter(x=>x.chaos==='fail').length,hold=rs.filter(x=>x.chaos==='hold').length,chaos=success+fail,latestExp=rs.reduce((m,x)=>Math.max(m,x.gradedExp||0),0);return{name,rides,success,fail,hold,chaos,latestExp,chaosRate:rides?chaos/rides:0,successRate:rides?success/rides:0,failRate:rides?fail/rides:0,tacticSuccess:chaos?success/chaos:0}}
+function renderAll(){
+dashRaces.textContent=state.races.length;dashRecords.textContent=state.records.length;const horseNames=[...new Set(state.records.map(x=>x.horse).filter(Boolean))],jockeyNames=[...new Set(state.records.map(x=>x.jockey).filter(Boolean))];dashHorses.textContent=horseNames.length;dashJockeys.textContent=jockeyNames.length;
+const oldRace=recRace.value;recRace.innerHTML='<option value="">選択してください</option>'+state.races.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(r=>`<option value="${r.id}">${esc((r.date||'')+' '+r.name)}</option>`).join('');if([...recRace.options].some(o=>o.value===oldRace))recRace.value=oldRace;
+raceList.innerHTML=state.races.length?state.races.slice().reverse().map(r=>`<div class="item"><strong>${esc(r.name)}</strong><div class="meta">${esc(r.date||'')} / ${esc(r.track||'')} ${r.surface||''}${r.distance||''}m / ${r.grade||''} / ${r.going||''} / ${r.weather||''}</div><div class="tags">${r.course?`<span class="tag">${esc(r.course)}</span>`:''}${r.laps?'<span class="tag">ラップ登録あり</span>':''}</div><div class="itembtns"><button onclick="editRace('${r.id}')">編集</button><button class="danger" onclick="deleteRace('${r.id}')">削除</button></div></div>`).join(''):'<div class="empty">まだレースがありません</div>';
+const chaosText={none:'撹乱なし',success:'成功奇策',fail:'失敗撹乱',hold:'判定保留'};
+recordList.innerHTML=state.records.length?state.records.slice().reverse().map(r=>`<div class="item"><strong>${esc(r.horse)} × ${esc(r.jockey)}</strong><div class="meta">${esc(raceLabel(r.raceId))} / ${r.popularity||'-'}人気 / ${r.finish||'-'}着 / ${esc(r.style||'')}</div><div class="tags">${r.slowStart>0?`<span class="tag">出遅れLv${r.slowStart}</span>`:''}${r.pulling>0?`<span class="tag">掛かりLv${r.pulling}</span>`:''}<span class="tag">${chaosText[r.chaos]||'撹乱なし'}</span>${r.chaos!=='none'?`<span class="tag">${esc(r.chaosType||'')}</span>`:''}</div><div class="itembtns"><button onclick="editRecord('${r.id}')">編集</button><button class="danger" onclick="deleteRecord('${r.id}')">削除</button></div></div>`).join(''):'<div class="empty">まだ騎乗記録がありません</div>';
+recentRecords.innerHTML=state.records.length?state.records.slice(-5).reverse().map(r=>`<div class="item"><strong>${esc(r.horse)} × ${esc(r.jockey)}</strong><div class="meta">${esc(raceLabel(r.raceId))} / ${chaosText[r.chaos]||''}</div></div>`).join(''):'<div class="empty">記録を追加するとここに表示されます</div>';
+const hs=horseNames.map(horseStats).sort((a,b)=>b.acc-a.acc);horseDb.innerHTML=hs.length?hs.map(s=>`<tr><td><b>${esc(s.name)}</b></td><td>${s.starts}</td><td>${pct(s.slow,s.starts)}</td><td>${pct(s.pull,s.starts)}</td><td class="warntxt"><b>${pct(s.any,s.starts)}</b></td><td>${pct(s.severe,s.starts)}</td><td>${stars(s.starts)}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">データなし</td></tr>';
+const js=jockeyNames.map(jockeyStats).sort((a,b)=>b.failRate-a.failRate);jockeyDb.innerHTML=js.length?js.map(s=>`<tr><td><b>${esc(s.name)}</b></td><td>${s.rides}</td><td>${pct(s.chaos,s.rides)}</td><td class="goodtxt">${pct(s.success,s.rides)}</td><td class="badtxt"><b>${pct(s.fail,s.rides)}</b></td><td>${pct(s.success,s.chaos)}</td><td>${s.latestExp||'—'}</td><td>${stars(s.rides)}</td></tr>`).join(''):'<tr><td colspan="8" class="empty">データなし</td></tr>';
+const oldH=riskHorse.value,oldJ=riskJockey.value;riskHorse.innerHTML='<option value="">馬を選択</option>'+horseNames.sort().map(x=>`<option>${esc(x)}</option>`).join('');riskJockey.innerHTML='<option value="">騎手を選択</option>'+jockeyNames.sort().map(x=>`<option>${esc(x)}</option>`).join('');if([...riskHorse.options].some(o=>o.value===oldH))riskHorse.value=oldH;if([...riskJockey.options].some(o=>o.value===oldJ))riskJockey.value=oldJ;renderRisk()
+}
+function renderRisk(){const h=riskHorse.value,j=riskJockey.value;if(!h||!j){riskResult.innerHTML='<div class="empty">馬と騎手を選ぶと参考値を計算します</div>';return}const hs=horseStats(h),js=jockeyStats(j),deviation=1-(1-hs.acc)*(1-js.chaosRate),negative=1-(1-hs.acc)*(1-js.failRate),conf=Math.min(hs.starts,js.rides);riskResult.innerHTML=`<div class="cards"><div class="card"><div class="k">馬アクシデント率</div><div class="v warntxt">${pct(hs.any,hs.starts)}</div><div class="s">${hs.starts}記録</div></div><div class="card"><div class="k">騎手展開撹乱率</div><div class="v violet">${pct(js.chaos,js.rides)}</div><div class="s">${js.rides}記録</div></div><div class="card"><div class="k">騎手失敗撹乱率</div><div class="v badtxt">${pct(js.fail,js.rides)}</div><div class="s">成功奇策は除外</div></div><div class="card"><div class="k">信頼度</div><div class="v">${stars(conf)}</div><div class="s">少ない方：${conf}</div></div></div><hr><div class="mini">参考シナリオ逸脱リスク</div><div class="bigRisk">${(deviation*100).toFixed(1)}%</div><div class="bar"><div style="width:${Math.min(100,deviation*100)}%"></div></div><div class="mini" style="margin-top:10px">参考ネガティブリスク：<b class="badtxt">${(negative*100).toFixed(1)}%</b></div><div class="notice" style="margin-top:12px">現在は「馬側」と「騎手側」を独立と仮定した暫定式です。同一イベントの重複や条件別補正はまだ未実装です。データ蓄積後に校正します。</div>`}
+riskHorse.addEventListener('change',renderRisk);riskJockey.addEventListener('change',renderRisk);
+exportBtn.addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`race-chaos-lab-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
+importBtn.addEventListener('click',()=>importFile.click());importFile.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!obj||!Array.isArray(obj.races)||!Array.isArray(obj.records))throw new Error();if(confirm('現在のデータを、このバックアップ内容で置き換えますか？')){state=obj;saveState();alert('復元しました')}}catch(err){alert('Race Chaos Labのバックアップとして読み込めません')}e.target.value=''});
+wipeBtn.addEventListener('click',()=>{if(confirm('本当に全データを削除しますか？')){state=blankState();saveState()}});
+renderAll();
+</script></body></html>
